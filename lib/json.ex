@@ -12,8 +12,18 @@ defmodule Json do
     porcentaje_grupal = 
     calcular_porcentaje_grupal(total_goles_individual, meta_de_goles_grupal)    
     mapa_porcentaje_bono = 
-    calcular_porcentaje_bono_individual(json, porcentaje_grupal, niveles, %{})     
+    calcular_porcentaje_bono_individual(json, porcentaje_grupal, niveles, %{})
+    json_modificado =
+    modificar_json(json, mapa_porcentaje_bono, []) 
+    ver(json_modificado)   
   end  
+  
+  defp leer() do     
+       "#{Application.app_dir(:json)}/priv/" 
+       |> Path.join("json.json") 
+       |> File.read!() 
+       |> Poison.decode!()        
+  end
 
   defp capturar_niveles([], mapa_niveles), do: mapa_niveles
 
@@ -61,11 +71,21 @@ defmodule Json do
     total_goles_individual/meta_de_goles_grupal
   end    
 
-  defp leer() do     
-       "#{Application.app_dir(:json)}/priv/" 
-       |> Path.join("json.json") 
-       |> File.read!() 
-       |> Poison.decode!()        
+  defp modificar_json([], _, nuevo_json), do: nuevo_json
+
+  defp modificar_json([h | t], mapa_porcentaje_bono, nuevo_json) do
+    bono =
+    h["bono"]*mapa_porcentaje_bono[h["nombre"]] 
+    nuevo_json =
+    nuevo_json ++ [Map.replace!(h, "sueldo_completo", bono + h["sueldo"])]
+    modificar_json(t, mapa_porcentaje_bono, nuevo_json)
+  end
+  
+  defp ver([]), do: "listo"
+
+  defp ver([h | t]) do
+    IO.puts("#{inspect h}")
+    ver(t)
   end
 
 end
