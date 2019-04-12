@@ -3,12 +3,9 @@ defmodule Json do
   def main() do 
     json = leer()
     mapa_niveles = %{}
-    niveles = 
-    json
-    |> capturar_niveles(mapa_niveles)     
-    total_goles = 
-    json
-    |> suma_goles_individuales(0)     
+    niveles = capturar_niveles(json, mapa_niveles)     
+    total_goles_individual = suma_goles_individuales(json, 0)   
+    meta_de_goles_grupal = suma_meta_de_goles_grupal(json, niveles, 0)    
   end  
 
   defp capturar_niveles([], mapa_niveles), do: mapa_niveles
@@ -33,6 +30,13 @@ defmodule Json do
     suma_goles_individuales(t, suma_goles)
   end
   
+  defp suma_meta_de_goles_grupal([], niveles, meta), do: meta
+
+  defp suma_meta_de_goles_grupal([h | t], niveles, meta) do
+    meta = niveles[h["nivel"]] + meta    
+    suma_meta_de_goles_grupal(t, niveles, meta)
+  end
+
   defp leer() do     
        "#{Application.app_dir(:json)}/priv/" 
        |> Path.join("json.json") 
