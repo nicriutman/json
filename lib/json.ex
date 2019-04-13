@@ -8,19 +8,24 @@ defmodule Json do
 
     niveles = 
       capturar_niveles(json, @niveles_por_defecto)
+    IO.puts("#{inspect niveles}")
 
     total_goles_individual = 
-      suma_goles_individuales(json, 0)
+      suma_goles_individuales_por_equipo(json, %{})
+    IO.puts("#{inspect total_goles_individual} ")
 
     meta_de_goles_grupal = 
-      suma_meta_de_goles_grupal(json, niveles, 0) 
+      suma_meta_de_goles_grupal_por_equipo(json, niveles, %{}) 
+   
 
     porcentaje_grupal = 
-      calcular_porcentaje_grupal(total_goles_individual, meta_de_goles_grupal) 
+      calcular_porcentaje_grupal_por_equipo(total_goles_individual, meta_de_goles_grupal, %{}) 
+    
 
     mapa_porcentaje_bono = 
       calcular_porcentaje_bono_individual(json, porcentaje_grupal, niveles, %{})
-
+    
+    
     json_modificado =
       modificar_json(json, mapa_porcentaje_bono, []) 
 
@@ -36,10 +41,14 @@ defmodule Json do
 
   defp capturar_niveles([], mapa_niveles), do: mapa_niveles
 
-  defp capturar_niveles([cabeza | cola], mapa_niveles) do  
+  defp capturar_niveles([cabeza | cola], mapa_niveles) do
+
     if Map.has_key?(mapa_niveles, cabeza["nivel"]) do
+      
       capturar_niveles(cola, mapa_niveles)
+
     else
+
       valor_nuevo_nivel =
         "ingrese un valor para el nivel #{cabeza["nivel"]}:"
         |> IO.gets()
@@ -48,29 +57,36 @@ defmodule Json do
 
       mapa_niveles = 
         Map.put(mapa_niveles, cabeza["nivel"], valor_nuevo_nivel)
+      
       capturar_niveles(cola, mapa_niveles)
+    
     end      
   end
 
-  defp suma_goles_individuales_por_equipo([], suma_goles_por_equipo), do: suma_goles_por_equipo
 
-  defp suma_goles_individuales_por_equipo([cabeza | cola], suma_goles_por_equipo) do
-    if Map.has_key?(suma_goles_por_equipo, cabeza["equipo"]) do
-      replace!(suma_goles_por_equipo, cabeza["equipo"], suma_goles_por_equipo[cabeza["equipo"]] + cabeza["goles"])
-      suma_goles_individuales_por_equipo(cola, suma_goles_por_equipo)
-    else
-      Map.put(suma_goles_por_equipo, cabeza["equipo"],cabeza["goles"])      
-      suma_goles_individuales_por_equipo(cola, suma_goles_por_equipo)
-    end
+  defp suma_goles_individuales_por_equipo(json, suma_goles_por_equipo) do
+
+    suma_goles_por_equipo =
+      json
+      |> Enum.group_by(fn jugador -> jugador["equipo"]
+      end)
+      |> Enum.map(fn {equipo, jugadores} -> 
+      goles_equipo =
+        Enum.reduce(jugadores, 0, fn %{"goles" => goles} , acc -> 
+          acc + goles
+      end)          
+      %{equipo => goles_equipo}
+  end)
+  end  
+
+  defp suma_meta_de_goles_grupal_por_equipo(json, niveles, meta) do          
 
   end
-  
-  defp suma_meta_de_goles_grupal([], niveles, meta), do: meta
 
-  defp suma_meta_de_goles_grupal([cabeza | cola], niveles, meta) do
-    meta = 
-    niveles[cabeza["nivel"]] + meta    
-    suma_meta_de_goles_grupal(cola, niveles, meta)
+  defp calcular_porcentaje_grupal_por_equipo(total_goles_individual, meta_de_goles_grupal,porcentaje_grupal) do
+    
+    porcentaje_grupal = Map.merge(total_goles_individual, meta_de_goles_grupal, fn _kn, v1, v2 ->  v1 / v2 end)
+  
   end
 
   defp calcular_porcentaje_bono_individual([], porcentaje_grupal, niveles, porcentajes), do: porcentajes
@@ -79,20 +95,15 @@ defmodule Json do
     porcentaje_individual =
     (cabeza["goles"]/niveles[cabeza["nivel"]])
     porcentajes = 
-    Map.put(porcentajes, cabeza["nombre"], (porcentaje_individual+porcentaje_grupal)/2)
+     Map.put(porcentajes, cabeza["nombre"], (porcentaje_individual+porcentaje_grupal[cabeza["equipo"]])/2)
     calcular_porcentaje_bono_individual(cola, porcentaje_grupal, niveles, porcentajes)
   end
-
-  defp calcular_porcentaje_grupal(total_goles_individual, meta_de_goles_grupal) do
-    porcentaje_grupal = 
-    total_goles_individual/meta_de_goles_grupal
-  end    
 
   defp modificar_json([], _, nuevo_json), do: nuevo_json
 
   defp modificar_json([cabeza | cola], mapa_porcentaje_bono, nuevo_json) do
     bono =
-    h["bono"]*mapa_porcentaje_bono[cabeza["nombre"]] 
+    cabeza["bono"]*mapa_porcentaje_bono[cabeza["nombre"]] 
     nuevo_json =
     nuevo_json ++ [Map.replace!(cabeza, "sueldo_completo", bono + cabeza["sueldo"])]
     modificar_json(cola, mapa_porcentaje_bono, nuevo_json)
