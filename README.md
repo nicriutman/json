@@ -20,5 +20,5 @@ Json.inicio()
 
 ## modificar el json
 
-en el proyecto ir a la carpeta priv y pegarlo el codigo del json en el archivo json.json
+en el proyecto ir a la carpeta priv y pegarlo el codigo del json en el archivo prueba.json
 
