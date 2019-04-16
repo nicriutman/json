@@ -93,11 +93,11 @@ defmodule JsonTest do
       |> File.read!() 
       |> Poison.decode!()       
     porcentaje_de_bono =
-      %{"Cosme Fulanito" => 1.44, "EL Cuauh" => 1.49, "El Rulo" => 0.8300000000000001, "Juan Perez" => 0.7133333333333334}
+      %{"Cosme Fulanito" => 1.44, "EL Cuauh" => 1.49, "El Rulo" => 0.83, "Juan Perez" => 0.71}
     resultado =
       Json.modificar_json(json, porcentaje_de_bono)
     esperado =
-    [%{"bono" => 25000, "equipo" => "rojo", "goles" => 10, "nivel" => "C", "nombre" => "Juan Perez", "sueldo" => 50000, "sueldo_completo" => 67833.33333333334}, 
+    [%{"bono" => 25000, "equipo" => "rojo", "goles" => 10, "nivel" => "C", "nombre" => "Juan Perez", "sueldo" => 50000, "sueldo_completo" => 67750.0}, 
     %{"bono" => 30000, "equipo" => "azul", "goles" => 30, "nivel" => "Cuauh", "nombre" => "EL Cuauh", "sueldo" => 100000, "sueldo_completo" => 1.447e5}, 
     %{"bono" => 10000, "equipo" => "azul", "goles" => 7, "nivel" => "A", "nombre" => "Cosme Fulanito", "sueldo" => 20000, "sueldo_completo" => 3.44e4}, 
     %{"bono" => 15000, "equipo" => "rojo", "goles" => 9, "nivel" => "B", "nombre" => "El Rulo", "sueldo" => 30000, "sueldo_completo" => 42450.0}]
