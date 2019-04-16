@@ -1,10 +1,10 @@
 # Json
 
-## instalacion
+## instalación
 
-debe istalar elixir, en el siguiente link encontrara una guia [link](<https://elixir-lang.org/install.html>).
+debe instalar elixir, en el siguiente link encontrara una guia [link](<https://elixir-lang.org/install.html>).
 
-## pruevas
+## pruebas
 
 vamos a la ruta principal del proyecto y ejecutamos el siguiente codigo; 
 ```
