@@ -1,21 +1,24 @@
 # Json
 
-**TODO: Add description**
+## instalacion
 
-## Installation
+debe istalar elixir, en el siguiente link encontrara una guia [link](<https://elixir-lang.org/install.html>).
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `json` to your list of dependencies in `mix.exs`:
+## pruevas
 
-```elixir
-def deps do
-  [
-    {:json, "~> 0.1.0"}
-  ]
-end
+vamos a la ruta principal del proyecto y ejecutamos el siguiente codigo; 
+```
+mix test
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/json](https://hexdocs.pm/json).
+## ejecutar el proyecto
+
+``` 
+iex -S mix
+Json.inicio()
+```
+
+## modificar el json
+
+en el proyecto ir a la carpeta priv y pegarlo el codigo del json en el archivo json.json
 
